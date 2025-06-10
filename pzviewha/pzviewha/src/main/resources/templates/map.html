@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:insert="~{header.html :: head}"></div>
+<p hidden="true" th:text="${mapPath}" id="mapPath"></p>
+<div class="container" style="">
+    <!--TODO: перенести в CSS прописанные классы-->
+    <div class="btn_container" style="justify-content: space-between; display: flex">
+        <!--TODO: переделать в отдельный класс и камелкейс-->
+        <button onclick="ToogleSafehouses();">Убежища</button>
+        <button onclick="TooglePlayers();">Игроки</button>
+        <button onclick="Rotate();">Повернуть</button>
+        <button onclick="Focus();">Центрировать</button>
+    </div>
+
+    <div class="map_container" style="display: flex; justify-content: center">
+        <div id="openseadragon1" style="width: 920px; height: 620px; border: 2px solid black"></div>
+
+
+        <!--            Отображение вкладки игроков и убежищ в виде раскрываемого списка-->
+        <!--TODO: Список блять, поменять название и вынести в CSS-->
+        <div class="spisok" style="width: 250px;">
+            <details style="position: relative; display: block; max-width: 650px; margin: 0 auto 10px; background: rgba(255,255,255,0.5); border-radius: 5px; transition: 0.3s; overflow: hidden;">
+                <summary style="list-style: none;">Игроки</summary>
+                <!-- Список игроков внутри playersInfo -->
+                <div th:each="player : ${listPlayers}">
+                    <!--TODO: изучить как это работает-->
+                    <li th:attr="onclick=|Focus('${player.x}','${player.y}')|" th:text="${player.playerName}" style="font-size: 10px; margin: 5px 0; cursor: pointer"></li>
+                </div>
+            </details>
+
+            <details style="position: relative; display: block; max-width: 650px; margin: 0 auto 10px; background: rgba(255,255,255,0.5); border-radius: 5px; transition: 0.3s; overflow: hidden;">
+                <summary style="list-style: none;">Убежища</summary>
+                <!-- Список игроков внутри listHouses -->
+                <div th:each="safehouse : ${listHouses}">
+                    <li th:attr="onclick=|Focus('${safehouse.x}','${safehouse.y}')|" th:text="${safehouse.title} + ' (Owner: '+ ${safehouse.owner} + ')'" style="font-size: 10px; margin: 5px 0; cursor: pointer"></li>
+                </div>
+
+            </details>
+        </div>
+    </div>
+
+    <script src="/javascript/openseadragon-bin-5.0.1/openseadragon.min.js"></script>
+    <script src="/javascript/htmlElements/OpenSeadragonHTMLelements.js"></script>
+    <script src="/javascript/map/buttons.js"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
+        var viewer = OpenSeadragon({
+            id: "openseadragon1",
+            prefixUrl: "/javascript/openseadragon-bin-5.0.1/images/",
+            tileSources: document.getElementById("mapPath").innerHTML,
+            maxZoomLevel: 120,
+        });
+
+        var hEl = viewer.HTMLelements()
+        viewer.addHandler('open', function() {
+            console.log("Изображение загружено!");
+
+            //Отрисовка домов
+            const safehousesInfo = /*[[${listHouses}]]*/ [];
+            console.log("Get String:", safehousesInfo);
+
+            try {
+
+                if (safehousesInfo && safehousesInfo.length > 0) {
+                    console.log("Total Safehouse:", safehousesInfo.length);
+
+                    safehousesInfo.forEach((safehouse, index) => {
+                        var point = viewer.viewport.imageToViewportCoordinates(safehouse.x, safehouse.y);
+                        var img = document.createElement("img");
+                        img.src = "img/safehouse.png";
+                        img.className = "safehouse";
+                        viewer.addOverlay(img, point);
+
+                    });
+                } else {
+                    console.warn("No safehouses data available.");
+                }
+            } catch (e) {
+                console.error("Failed to parse safehouses data:", e);
+            }
+
+
+            //Отрисовка игроков
+            const playersList = /*[[${listPlayers}]]*/ [];
+            console.log("Get String:", playersList);
+            try {
+
+                if (playersList && playersList.length > 0) {
+                    console.log("Total players:", playersList.length);
+                    playersList.forEach((player, index) => {
+
+                        var point = viewer.viewport.imageToViewportCoordinates(player.x, player.y);
+                        console.log("point ", point);
+                        var img = document.createElement("img");
+                        img.src = "img/player.png";
+                        img.className = "player";
+                        viewer.addOverlay(img, point);
+
+                        var textbox = document.createElement('div')
+                        textbox.style.backgroundColor = 'rgba(158,158,158,0.76)'
+                        textbox.innerHTML = player.playerName
+
+                        var nameLength = player.playerName.length;
+
+                        hEl.addElement({
+                            id: player.playerName,
+                            element: textbox,
+                            x: player.x + 12,
+                            y: player.y - 5,
+                            width: nameLength * 10,
+                            height: 17,
+                            fontSize: 0.75
+                        });
+                    });
+                } else {
+                    console.warn("No players data available.");
+                }
+            } catch (e) {
+                console.error("Failed to parse players data:", e);
+            }
+        });
+
+    </script>
+</div>
+
+<div th:insert="~{footer.html :: foot}"></div>
+</body>
+</html>
+

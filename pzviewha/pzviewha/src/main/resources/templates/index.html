@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Главная</title>
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:400,400italic,600,600italic,700,700italic|Playfair+Display:400,700&subset=latin,cyrillic">
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+</head>
+
+
+<body>
+<div th:insert="~{header.html :: head}"></div>
+
+<div class="container">
+
+    <div class="posts-list">
+        <!--Игроки на сервере текущее_кол-во/макс_кол-во-->
+        <!-- игрок 1-->
+        <!-- игрок 2-->
+        <div th:text="'Игроков: ' + ${playersNum} + '/' + ${maxplayers}" class="posts-header">Игроки на сервере</div>
+        <div style="width: 100%; display: flex; justify-content: space-between" >
+            <div th:each="player : ${serverPlayers}"class="posts-post">
+                <p th:text="${player.playerName}"></p>
+            </div>
+        </div>
+
+
+        <hr>
+
+        <div class="posts-header">Настройки песочницы</div>
+
+
+        <div th:each="setting : ${sandboxSettings}">
+            <div class="posts-post" th:text="${setting.configName +': '+ setting.configValue}" th:attr="title=${setting.configDescription}"></div>
+        </div>
+
+
+
+        <div class="posts-header">Настройки сервера</div>
+        <div th:each="setting : ${serverSettings}">
+            <div class="posts-post" th:text="${setting.configName +' '+ setting.configValue}" th:attr="title=${setting.configDescription}"></div>
+        </div>
+    </div><!-- конец div class="posts-list"-->
+
+</div> <!-- конец div class="container"-->
+
+<div th:insert="~{footer.html :: foot}"></div>
+</body>
+</html>
+
+</body>
+</html>

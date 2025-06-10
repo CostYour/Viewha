@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<div  th:fragment="foot">
+  <footer>
+    <div class="container">
+      <div class="footer-col"><span>Viewha © Cost_Your 2025</span></div>
+      <div class="footer-col">
+        <div class="social-bar-wrap">
+          <a title="GitHub" href="https://www.github.com" target="_blank"><i class="fa fa-github"></i></a>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <a href="mailto:admin@yoursite.ru">Написать письмо</a>
+      </div>
+
+    </div>
+  </footer>
+  <script>
+    $('.nav-toggle').on('click', function(){
+      $('#menu').toggleClass('active');
+    });
+  </script>
+</div>
